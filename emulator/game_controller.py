@@ -1,6 +1,6 @@
 import logging
 from pyboy import PyBoy
-from global_map import local_to_global
+from emulator.global_map import local_to_global
 
 logging.basicConfig(level=logging.INFO)
 

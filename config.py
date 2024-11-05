@@ -1,3 +1,3 @@
-ROM_PATH = "red.gb"
+ROM_PATH = "emulator/red.gb"
 EMULATION_SPEED = 5
 MAX_STEPS = 10000
