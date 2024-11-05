@@ -4,7 +4,6 @@ from emulator.global_map import local_to_global
 
 logging.basicConfig(level=logging.INFO)
 
-
 class GameController:
     def __init__(self, rom_path, emulation_speed=1.0):
         self.pyboy = PyBoy(rom_path)
