@@ -1,6 +1,7 @@
 import logging
 from pyboy import PyBoy
 from emulator.global_map import local_to_global
+from config import START_SAVE_PATH
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,7 +19,7 @@ class GameController:
             self.pyboy.save_state(f)
         logging.info("Game state saved to %s", state_filename)
 
-    def load_state(self, state_filename="squirt_two.save"):
+    def load_state(self, state_filename=START_SAVE_PATH):
         with open(state_filename, "rb") as f:
             self.pyboy.load_state(f)
         logging.info("Game state loaded from %s", state_filename)

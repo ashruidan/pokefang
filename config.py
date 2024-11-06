@@ -1,3 +1,5 @@
-ROM_PATH = "emulator/red.gb"
+
+# EMULATOR CONFIG
 EMULATION_SPEED = 5
-MAX_STEPS = 10000
+ROM_PATH = "emulator/red.gb"
+START_SAVE_PATH = "emulator/bw_squirtle.save"
