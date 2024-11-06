@@ -8,9 +8,6 @@ def parse_arguments():
     )
     return parser.parse_args()
 
-def main():
+if __name__ == "__main__":
     args = parse_arguments()
     environment.run(args.human)
-
-if __name__ == "__main__":
-    main()
