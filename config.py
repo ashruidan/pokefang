@@ -1,6 +1,9 @@
 
 # EMULATOR CONFIG
 EMULATION_SPEED = 5
+HOLD_TICK = 20
+RELEASE_TICK = 2
+
+# EMULATOR PATH
 ROM_PATH = "emulator/red.gb"
 START_SAVE_PATH = "emulator/bw_squirtle.save"
-LOCAL_MAP_PATH = "emulator/map_data.json"
