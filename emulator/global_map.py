@@ -1,7 +1,8 @@
 import os
 import json
+from config import LOCAL_MAP_PATH
 
-MAP_PATH = os.path.join(os.path.dirname(__file__), "map_data.json")
+MAP_PATH = os.path.join(os.path.dirname(__file__), LOCAL_MAP_PATH)
 PAD = 20
 GLOBAL_MAP_SHAPE = (444 + PAD * 2, 436 + PAD * 2)
 MAP_ROW_OFFSET = PAD
