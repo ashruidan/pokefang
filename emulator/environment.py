@@ -1,7 +1,8 @@
-import random, logging
+import random, logging, json
 from pyboy import PyBoy
 from agent.agent import agent_move
 from config import *
+from emulator.memory import memory
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,6 +29,12 @@ class Emulator:
         self.pyboy.stop(False)
         logging.info("Emulator stopped.")
 
+    def retrieve_mem(self, addresses):
+        return {
+            key: self.pyboy.memory[value]
+            for key, value in addresses.items()
+        }
+
 def run(isHuman):
     env = Emulator()
     env.load_state()
@@ -36,6 +43,7 @@ def run(isHuman):
         while not done:
             if not isHuman:
                 env.controller_input(agent_move())
+            print(env.retrieve_mem(memory))
             env.pyboy.tick()
     except KeyboardInterrupt:
         print("Program interrupted. Stopping emulator...")
