@@ -7,23 +7,23 @@ from emulator.memory import memory
 logging.basicConfig(level=logging.INFO)
 
 class Emulator:
-    def __init__(self):
-        self.pyboy = PyBoy(ROM_PATH)
+    def __init__(self, headless):
+        self.pyboy = PyBoy(PATH_ROM, window="null" if headless else "SDL2")
         if not self.pyboy:
             raise RuntimeError("Failed to initialize PyBoy with the given ROM.")
-        self.pyboy.set_emulation_speed(EMULATION_SPEED)
-        logging.info("Emulator initialized with ROM : %s", ROM_PATH)
+        self.pyboy.set_emulation_speed(EMULATOR_SPEED_HEADLESS if headless else EMULATOR_SPEED_FULL)
+        logging.info("Emulator initialized with ROM : %s", PATH_ROM)
 
-    def load_state(self, state_path=START_SAVE_PATH):
+    def load_state(self, state_path=PATH_START_SAVE):
         with open(state_path, "rb") as path:
             self.pyboy.load_state(path)
         logging.info("Game state loaded from %s", state_path)
 
     def controller_input(self, input):
         self.pyboy.button_press(input)
-        self.pyboy.tick(HOLD_TICK)
+        self.pyboy.tick(EMULATOR_TICK_HOLD)
         self.pyboy.button_release(input)
-        self.pyboy.tick(RELEASE_TICK)
+        self.pyboy.tick(EMULATOR_TICK_RELEASE)
 
     def stop(self):
         self.pyboy.stop(False)
@@ -35,22 +35,24 @@ class Emulator:
             for key, value in addresses.items()
         }
 
-def run(human):
-    env = Emulator()
+def run(mode):
+    env = Emulator(headless=mode.headless)
     env.load_state()
-    episode(human)
-
-def episode(human):
-    done = False
     try:
-        while not done:
-            state = env.retrieve_mem(memory))
-            if not human:
-                env.controller_input(agent_move(state))
-            print(state)
-            env.pyboy.tick()
+        if mode.human or mode.eval:
+            episode(env, mode.human,-1)
+        else:
+            episode(env, mode.human)
     except KeyboardInterrupt:
         print("Program interrupted. Stopping emulator...")
     finally:
         env.stop()
 
+def episode(env, human, episode_size=EPISODE_SIZE):
+    done = False
+    while not done and episode_size:
+        if not human:
+            env.controller_input(agent_move())
+        env.pyboy.tick()
+        if episode_size != -1:
+            episode_size -= 1

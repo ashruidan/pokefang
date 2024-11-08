@@ -10,8 +10,8 @@ class Actions(Enum):
     A = "a"
     B = "b"
     # Special Input
-    START = "start"
-    SELECT = "select"
+    # START = "start"
+    # SELECT = "select"
 
     @classmethod
     def list(cls):
