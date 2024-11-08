@@ -35,17 +35,22 @@ class Emulator:
             for key, value in addresses.items()
         }
 
-def run(isHuman):
+def run(human):
     env = Emulator()
     env.load_state()
+    episode(human)
+
+def episode(human):
     done = False
     try:
         while not done:
-            if not isHuman:
-                env.controller_input(agent_move())
-            print(env.retrieve_mem(memory))
+            state = env.retrieve_mem(memory))
+            if not human:
+                env.controller_input(agent_move(state))
+            print(state)
             env.pyboy.tick()
     except KeyboardInterrupt:
         print("Program interrupted. Stopping emulator...")
     finally:
         env.stop()
+
