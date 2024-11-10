@@ -1,5 +1,5 @@
 import argparse
-from emulator import environment
+from emulator.environment import run
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -10,7 +10,7 @@ def parse_arguments():
         "--headless", action="store_true", help="Enable Headless Parallel Training Mode"
     )
     group.add_argument(
-        "--human", action="store_true", help="Enable Human Control Mode."
+        "--human", action="store_true", help="Enable Human Control Mode"
     )
     group.add_argument(
         "--train", action="store_true", help="Run Graphical Training Mode"
@@ -22,4 +22,4 @@ def parse_arguments():
 
 if __name__ == "__main__":
     args = parse_arguments()
-    environment.run(args)
+    run(args)

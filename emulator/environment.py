@@ -1,58 +1,54 @@
-import random, logging, json
-from pyboy import PyBoy
-from agent.agent import agent_move
-from config import *
-from emulator.memory import memory
+from agent.agent import Agent
+from config import EPISODE_SIZE, BATCH_SIZE
+from .emulator import Emulator
+from .global_map import local_to_global
 
-logging.basicConfig(level=logging.INFO)
-
-class Emulator:
-    def __init__(self, headless):
-        self.pyboy = PyBoy(PATH_ROM, window="null" if headless else "SDL2")
-        if not self.pyboy:
-            raise RuntimeError("Failed to initialize PyBoy with the given ROM.")
-        self.pyboy.set_emulation_speed(EMULATOR_SPEED_HEADLESS if headless else EMULATOR_SPEED_FULL)
-        logging.info("Emulator initialized with ROM : %s", PATH_ROM)
-
-    def load_state(self, state_path=PATH_START_SAVE):
-        with open(state_path, "rb") as path:
-            self.pyboy.load_state(path)
-        logging.info("Game state loaded from %s", state_path)
-
-    def controller_input(self, input):
-        self.pyboy.button_press(input)
-        self.pyboy.tick(EMULATOR_TICK_HOLD)
-        self.pyboy.button_release(input)
-        self.pyboy.tick(EMULATOR_TICK_RELEASE)
-
-    def stop(self):
-        self.pyboy.stop(False)
-        logging.info("Emulator stopped.")
-
-    def retrieve_mem(self, addresses):
-        return {
-            key: self.pyboy.memory[value]
-            for key, value in addresses.items()
-        }
+#MEMORY_EXPLORATION_TYPE = 0xFFD7 [0 = Indoor, 1 = Special, 2 = Outside/Oak Lab]
+MEMORY_BATTLE_TYPE = 0xD057 # [0 = No, 1 = Wild, 2 = Trainer] Battle
+MEMORY_LOCAL_Y = 0xD361
+MEMORY_LOCAL_X = 0xD362
+MEMORY_LOCAL_MAP = 0xD35E
 
 def run(mode):
+    agent = Agent()
     env = Emulator(headless=mode.headless)
     env.load_state()
     try:
         if mode.human or mode.eval:
-            episode(env, mode.human,-1)
+            episode(env, agent, mode.human,-1)
         else:
-            episode(env, mode.human)
+            batch(env, agent, mode.human)
     except KeyboardInterrupt:
         print("Program interrupted. Stopping emulator...")
     finally:
+        del agent
         env.stop()
 
-def episode(env, human, episode_size=EPISODE_SIZE):
+def batch(env, agent, human, batch_size=BATCH_SIZE):
+    while batch_size:
+        episode(env, agent, human)
+        env.load_state()
+        batch_size -= 1
+
+def episode(env, agent, human, episode_size=EPISODE_SIZE):
     done = False
     while not done and episode_size:
+        local_y = env.retrieve_memory(MEMORY_LOCAL_Y)
+        local_x = env.retrieve_memory(MEMORY_LOCAL_X)
+        local_map = env.retrieve_memory(MEMORY_LOCAL_MAP)
+        state = {
+            "step_left": episode_size,
+            "battle": env.retrieve_memory(MEMORY_BATTLE_TYPE),
+            "position": local_to_global(local_y, local_x, local_map),
+            "events": env.event_flags(),
+            "battle_menu": env.battle_menu(),
+        }
         if not human:
-            env.controller_input(agent_move())
+            env.controller_input(agent.step(state, episode_size != -1))
+        else:
+            agent.algo.qtable_print(state)
         env.pyboy.tick()
         if episode_size != -1:
             episode_size -= 1
+
+

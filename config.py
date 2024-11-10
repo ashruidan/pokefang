@@ -9,4 +9,5 @@ PATH_ROM = "emulator/red.gb"
 PATH_START_SAVE = "emulator/bw_squirtle.save"
 
 # RUN CONFIG
-EPISODE_SIZE = 1000
+EPISODE_SIZE = 25000
+BATCH_SIZE = 10
