@@ -4,6 +4,9 @@
 
 Implementing a Q-learning algorithm to train an agent to play Pokemon Red.
 
+>[!WARNING]
+>The project is now deprecated; please refer to its continuation under the new project, [daikonquest](https://github.com/ashruidan/daikonquest)."
+
 ## Requirements 
 
 (not showing their dependencies)
